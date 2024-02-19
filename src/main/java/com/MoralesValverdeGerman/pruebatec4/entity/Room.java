@@ -27,6 +27,7 @@ public class Room {
     private Hotel hotel; // El hotel al que pertenece esta habitación.
 
     private String roomType;
+    private int capacity;
     private Boolean isAvailable;
     private Boolean isDeleted = false;
 

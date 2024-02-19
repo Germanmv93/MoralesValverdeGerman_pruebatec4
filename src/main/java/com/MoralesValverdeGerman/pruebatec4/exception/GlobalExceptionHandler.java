@@ -51,4 +51,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(LocationMismatchException.class)
+    public ResponseEntity<?> handleInsufficientRoomCapacityException(LocationMismatchException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
 }

@@ -43,6 +43,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room saveRoom(Room room) {
+        assignRoomCapacityBasedOnType(room);
         return roomRepository.save(room);
     }
 
@@ -75,8 +76,19 @@ public class RoomServiceImpl implements RoomService {
         roomRepository.save(room); // Guardar el cambio en la base de datos
     }
 
-
-
-
-
+    private void assignRoomCapacityBasedOnType(Room room) {
+        switch (room.getRoomType()) {
+            case "Individual":
+                room.setCapacity(1);
+                break;
+            case "Doble":
+                room.setCapacity(2);
+                break;
+            case "Triple":
+                room.setCapacity(3);
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo de habitación desconocido o no soportado: " + room.getRoomType());
+        }
+    }
 }
