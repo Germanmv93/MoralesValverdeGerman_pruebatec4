@@ -1,15 +1,18 @@
 package com.MoralesValverdeGerman.pruebatec4.controller;
 
 import com.MoralesValverdeGerman.pruebatec4.dto.HotelDto;
+import com.MoralesValverdeGerman.pruebatec4.dto.HotelPatchDto;
 import com.MoralesValverdeGerman.pruebatec4.entity.Hotel;
 import com.MoralesValverdeGerman.pruebatec4.entity.Room;
 import com.MoralesValverdeGerman.pruebatec4.utils.HotelUtils;
 import com.MoralesValverdeGerman.pruebatec4.exception.LocationMismatchException;
 import com.MoralesValverdeGerman.pruebatec4.exception.NoAvailableHotelsException;
 import com.MoralesValverdeGerman.pruebatec4.service.HotelService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -60,52 +63,31 @@ public class HotelController {
 
         return ResponseEntity.ok(hotelDetailDTO);
     }
-
-    // Create a new hotel
     @PostMapping("/hotels/new")
-    public ResponseEntity<String> createHotel(@RequestBody Hotel hotel) {
+    public ResponseEntity<String> createHotel(@Validated @RequestBody HotelDto hotelDto) {
+        // Crear una entidad Hotel y copiar propiedades desde HotelDto
+        Hotel hotel = new Hotel();
+        BeanUtils.copyProperties(hotelDto, hotel);
+
         Hotel savedHotel = hotelService.saveHotel(hotel);
         if (savedHotel != null) {
             String responseMessage = String.format(
-                    "El hotel con id %s ha sido creado. Sus características son:\n Nombre: %s.\n Localización: %s.",
+                    "The hotel with ID %s has been created. Its features are as follows:\n Name: %s.\n Location: %s.",
                     savedHotel.getHotelCode(), savedHotel.getName(), savedHotel.getLocation());
             return ResponseEntity.ok(responseMessage);
         } else {
-            return ResponseEntity.badRequest().body("No se pudo crear el hotel");
+            return ResponseEntity.badRequest().body("The hotel could not be created.");
         }
     }
-
-    // Update an existing hotel
-    @PutMapping("/{hotelCode}")
-    public ResponseEntity<Hotel> updateHotel(@PathVariable String hotelCode, @RequestBody Hotel hotelDetails) {
-        Hotel hotel = hotelService.findHotelByCode(hotelCode);
-        hotel.setName(hotelDetails.getName());
-        hotel.setLocation(hotelDetails.getLocation());
-        // Update other fields as necessary
-        final Hotel updatedHotel = hotelService.saveHotel(hotel);
+    @PatchMapping("/hotels/{hotelCode}")
+    public ResponseEntity<HotelDto> updateHotel(@PathVariable String hotelCode, @RequestBody HotelPatchDto hotelPatchDto) {
+        HotelDto updatedHotel = hotelService.updateHotel(hotelCode, hotelPatchDto);
         return ResponseEntity.ok(updatedHotel);
     }
-
-    // Delete a hotel
     @DeleteMapping("/hotels/delete/{hotelCode}")
     public ResponseEntity<String> deleteHotel(@PathVariable String hotelCode) {
         hotelService.deleteHotel(hotelCode);
         String message = String.format("The hotel %s has been successfully deleted from the database.", hotelCode);
         return ResponseEntity.ok(message);
     }
-
-//    @GetMapping("/hotels/list")
-//    public ResponseEntity<List<HotelDto>> getAvailableHotels(
-//            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate dateFrom,
-//            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate dateTo,
-//            @RequestParam String destination) {
-//
-//        List<HotelDto> availableHotelsDto = hotelService.getAvailableHotels(dateFrom, dateTo, destination);
-//
-//        if (availableHotelsDto.isEmpty()) {
-//            throw new NoAvailableHotelsException("Sorry, no availability for the provided dates and location.");
-//        }
-//
-//        return ResponseEntity.ok(availableHotelsDto);
-//    }
 }

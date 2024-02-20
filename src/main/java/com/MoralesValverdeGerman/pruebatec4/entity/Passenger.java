@@ -1,5 +1,6 @@
 package com.MoralesValverdeGerman.pruebatec4.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,5 +25,6 @@ public class Passenger {
 
     @ManyToOne
     @JoinColumn(name = "booking_id")
+    @JsonIgnore
     private FlightBooking booking; // La reserva a la que pertenece el pasajero
 }

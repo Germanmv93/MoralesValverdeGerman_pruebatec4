@@ -25,4 +25,5 @@ public class BookingHotelDto {
     private int numberOfGuest;
     private String roomType;
     private Long roomId;
+
 }

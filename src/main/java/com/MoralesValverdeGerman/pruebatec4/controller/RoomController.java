@@ -3,11 +3,15 @@ package com.MoralesValverdeGerman.pruebatec4.controller;
 import com.MoralesValverdeGerman.pruebatec4.dto.RoomDto;
 import com.MoralesValverdeGerman.pruebatec4.entity.Hotel;
 import com.MoralesValverdeGerman.pruebatec4.entity.Room;
+import com.MoralesValverdeGerman.pruebatec4.exception.HotelNotFoundException;
 import com.MoralesValverdeGerman.pruebatec4.service.RoomService;
 import com.MoralesValverdeGerman.pruebatec4.service.HotelService;
+import com.MoralesValverdeGerman.pruebatec4.utils.RoomUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +33,8 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
+
+
     // Get a single room by number
 //    @GetMapping("/{roomNumber}")
 //    public ResponseEntity<Optional<Room>> getRoomByNumber(@PathVariable String roomNumber) {
@@ -36,9 +42,10 @@ public class RoomController {
 //        return ResponseEntity.ok(room);
 //    }
 
-    // Create a new room
+//     Metodo que me funciona bien de momento.
+
     @PostMapping
-    public ResponseEntity<String> createRoom(@RequestBody Room room) {
+    public ResponseEntity<String> createRoom(@Validated @RequestBody Room room) {
         Hotel hotel = hotelService.findHotelByCode(room.getHotel().getHotelCode());
         if (hotel == null) {
             return ResponseEntity.badRequest().body("El hotel especificado no existe.");
@@ -56,19 +63,28 @@ public class RoomController {
         return ResponseEntity.ok(message);
     }
 
-    // Update an existing room
-//    @PutMapping("/{roomNumber}")
-//    public ResponseEntity<Room> updateRoom(@PathVariable String roomNumber, @RequestBody Room roomDetails) {
-//        Room room = roomService.findRoomByNumber(roomNumber);
-//        room.setRoomType(roomDetails.getRoomType());
-//        room.setPricePerNight(roomDetails.getPricePerNight());
-//        room.setIsAvailable(roomDetails.getIsAvailable());
-//        // Update other fields as necessary
-//        final Room updatedRoom = roomService.saveRoom(room);
-//        return ResponseEntity.ok(updatedRoom);
+//Nuevo metodo que quiero implementar
+//    @PostMapping
+//    public ResponseEntity<String> createRoom(@Valid @RequestBody RoomDto roomDto) {
+//        Hotel hotel = hotelService.findHotelByCode(roomDto.getHotelCode())
+//                .orElseThrow(() -> new HotelNotFoundException("El hotel especificado no existe."));
+//
+//        if (roomService.findByRoomNumberAndHotel_HotelCode(roomDto.getRoomNumber(), hotel.getHotelCode()).isPresent()) {
+//            return ResponseEntity.badRequest().body("Room with number " + roomDto.getRoomNumber() + " already exists in hotel " + hotel.getHotelCode() + ".");
+//        }
+//
+//        Room room = RoomUtils.convertToRoom(roomDto, hotel); // Asumiendo que este método está implementado
+//        Room savedRoom = roomService.saveRoom(room);
+//
+//        String message = String.format("Room No. %s has been successfully added to Hotel %s.", savedRoom.getRoomNumber(), hotel.getHotelCode());
+//        return ResponseEntity.ok(message);
 //    }
 
-    // Delete a room
+
+
+
+
+
     @DeleteMapping("/{roomNumber}/hotel/{hotelCode}")
     public ResponseEntity<String> deleteRoomFromHotel(@PathVariable String roomNumber, @PathVariable String hotelCode) {
         try {

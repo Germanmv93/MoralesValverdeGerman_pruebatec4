@@ -34,7 +34,6 @@ public class BookingHotelServiceImpl implements BookingHotelService {
     @Override
     public BookingHotel createBooking(BookingHotelDto bookingDto) {
         Optional<Hotel> hotelOptional = hotelRepository.findByHotelCode(bookingDto.getHotelCode());
-
         Hotel hotel = hotelOptional.orElseThrow(() -> new BookingHotelNotFoundException("Sorry, the hotel with ID " + bookingDto.getHotelCode() + " does not exist."));
 
         if (!hotel.getLocation().equalsIgnoreCase(bookingDto.getLocation())) {
@@ -53,8 +52,14 @@ public class BookingHotelServiceImpl implements BookingHotelService {
             throw new NoAvailableRoomException("Sorry, there are no rooms available.");
         }
 
-        // Por simplicidad, elegimos la primera habitación disponible
-        Room selectedRoom = availableRooms.get(0);
+        // Seleccionar una habitación aleatoria de la lista de habitaciones disponibles
+        Room selectedRoom = availableRooms.get(new Random().nextInt(availableRooms.size()));
+
+        // Verificar la capacidad de la habitación seleccionada
+        if (bookingDto.getNumberOfGuest() > selectedRoom.getCapacity()) {
+            throw new InsufficientRoomCapacityException("La habitación seleccionada no tiene suficiente capacidad para el número de huéspedes.");
+        }
+
         BookingHotel booking = new BookingHotel();
         booking.setRoom(selectedRoom);
         booking.setCheckIn(bookingDto.getCheckIn());
@@ -66,7 +71,7 @@ public class BookingHotelServiceImpl implements BookingHotelService {
 
         // Calcular el precio total de la reserva
         double totalPrice = selectedRoom.getPricePerNight() * bookingDto.getNights();
-        booking.setTotalPrice(totalPrice); // Asegúrate de que BookingHotel tenga un atributo para almacenar el precio total
+        booking.setTotalPrice(totalPrice);
 
         // Aquí, podrías marcar la habitación como no disponible si es necesario
         selectedRoom.setIsAvailable(false);

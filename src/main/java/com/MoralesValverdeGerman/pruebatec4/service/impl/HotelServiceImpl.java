@@ -1,6 +1,7 @@
 package com.MoralesValverdeGerman.pruebatec4.service.impl;
 
 import com.MoralesValverdeGerman.pruebatec4.dto.HotelDto;
+import com.MoralesValverdeGerman.pruebatec4.dto.HotelPatchDto;
 import com.MoralesValverdeGerman.pruebatec4.entity.Hotel;
 import com.MoralesValverdeGerman.pruebatec4.entity.Room;
 import com.MoralesValverdeGerman.pruebatec4.exception.HotelAlreadyExistsException;
@@ -9,7 +10,9 @@ import com.MoralesValverdeGerman.pruebatec4.repository.HotelRepository;
 import com.MoralesValverdeGerman.pruebatec4.service.HotelService;
 import com.MoralesValverdeGerman.pruebatec4.utils.HotelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,7 +43,7 @@ public class HotelServiceImpl implements HotelService {
 
     public void deleteHotel(String hotelCode) {
         Hotel hotel = hotelRepository.findByHotelCode(hotelCode)
-                .orElseThrow(() -> new HotelNotFoundException(hotelCode));
+                .orElseThrow(() -> new HotelNotFoundException("Hotel not found with code: " + hotelCode));
         hotelRepository.delete(hotel);
     }
 
@@ -55,6 +58,20 @@ public class HotelServiceImpl implements HotelService {
 
     public boolean existsByLocation(String location) {
         return hotelRepository.existsByLocation(location);
+    }
+
+    @Override
+    public HotelDto updateHotel(String hotelCode, HotelPatchDto hotelPatchDto) {
+        Hotel hotel = hotelRepository.findById(hotelCode)
+                .orElseThrow(() -> new HotelNotFoundException("Hotel not found with code: " + hotelCode));
+
+        hotelPatchDto.getName().ifPresent(hotel::setName);
+        hotelPatchDto.getLocation().ifPresent(hotel::setLocation);
+
+        Hotel updatedHotel = hotelRepository.save(hotel);
+
+        // Utiliza HotelUtils para convertir la entidad Hotel a HotelDto
+        return HotelUtils.convertToHotelDto(updatedHotel);
     }
 
 

@@ -60,7 +60,7 @@ public class FlightServiceImpl implements FlightService {
         dto.setDate(flight.getDate());
         dto.setOrigin(flight.getOrigin());
         dto.setDestination(flight.getDestination());
-        dto.setNumberOfPersons(flight.getNumberOfPersons());
+        dto.setSeats(flight.getSeats());
         dto.setSeatType(flight.getSeatType());
         // Aquí puedes añadir la lógica para asignar el resto de los campos necesarios
         return dto;

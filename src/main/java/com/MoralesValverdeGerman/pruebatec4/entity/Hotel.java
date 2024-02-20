@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 public class Hotel {
     @Id
-    private String hotelCode; //Al ser de tipo String no debe llevar GeneratedValue.
+    private String hotelCode;
 
     private String name;
     private String location;
