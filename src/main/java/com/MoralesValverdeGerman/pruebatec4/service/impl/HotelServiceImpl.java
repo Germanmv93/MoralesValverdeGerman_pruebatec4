@@ -3,16 +3,14 @@ package com.MoralesValverdeGerman.pruebatec4.service.impl;
 import com.MoralesValverdeGerman.pruebatec4.dto.HotelDto;
 import com.MoralesValverdeGerman.pruebatec4.dto.HotelPatchDto;
 import com.MoralesValverdeGerman.pruebatec4.entity.Hotel;
-import com.MoralesValverdeGerman.pruebatec4.entity.Room;
 import com.MoralesValverdeGerman.pruebatec4.exception.HotelAlreadyExistsException;
 import com.MoralesValverdeGerman.pruebatec4.exception.HotelNotFoundException;
 import com.MoralesValverdeGerman.pruebatec4.repository.HotelRepository;
 import com.MoralesValverdeGerman.pruebatec4.service.HotelService;
-import com.MoralesValverdeGerman.pruebatec4.utils.HotelUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import com.MoralesValverdeGerman.pruebatec4.entity.Room;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,23 +22,33 @@ public class HotelServiceImpl implements HotelService {
     @Autowired
     private HotelRepository hotelRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public List<Hotel> findAllHotels() {
-        return hotelRepository.findAll();
+    public List<HotelDto> findAllHotels() {
+        return hotelRepository.findAll().stream()
+                .map(hotel -> modelMapper.map(hotel, HotelDto.class))
+                .collect(Collectors.toList());
     }
 
-    public Hotel findHotelByCode(String hotelCode) {
-        return hotelRepository.findByHotelCode(hotelCode)
+    @Override
+    public HotelDto findHotelByCode(String hotelCode) {
+        Hotel hotel = hotelRepository.findByHotelCode(hotelCode)
                 .orElseThrow(() -> new HotelNotFoundException(hotelCode));
+        return modelMapper.map(hotel, HotelDto.class);
     }
 
-    public Hotel saveHotel(Hotel hotel) {
-        if (hotelRepository.findByHotelCode(hotel.getHotelCode()).isPresent()) {
-            throw new HotelAlreadyExistsException("Sorry, the hotel you are trying to create already exists in the database, the operation could not be performed.");
+    @Override
+    public HotelDto createHotel(HotelDto hotelDto) {
+        if (hotelRepository.existsByHotelCode(hotelDto.getHotelCode())) {
+            throw new HotelAlreadyExistsException("Hotel already exists.");
         }
-        return hotelRepository.save(hotel);
+        Hotel hotel = modelMapper.map(hotelDto, Hotel.class);
+        return modelMapper.map(hotelRepository.save(hotel), HotelDto.class);
     }
 
+    @Override
     public void deleteHotel(String hotelCode) {
         Hotel hotel = hotelRepository.findByHotelCode(hotelCode)
                 .orElseThrow(() -> new HotelNotFoundException("Hotel not found with code: " + hotelCode));
@@ -48,14 +56,6 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public List<HotelDto> getAvailableHotels(LocalDate dateFrom, LocalDate dateTo, String destination) {
-        List<Hotel> hotels = hotelRepository.findAvailableHotelsByDateRangeAndDestination(dateFrom, dateTo, destination);
-        return hotels.stream()
-                .map(HotelUtils::convertToHotelDto) // Cambia aquí a la llamada estática
-                .collect(Collectors.toList());
-    }
-
-
     public boolean existsByLocation(String location) {
         return hotelRepository.existsByLocation(location);
     }
@@ -64,15 +64,46 @@ public class HotelServiceImpl implements HotelService {
     public HotelDto updateHotel(String hotelCode, HotelPatchDto hotelPatchDto) {
         Hotel hotel = hotelRepository.findById(hotelCode)
                 .orElseThrow(() -> new HotelNotFoundException("Hotel not found with code: " + hotelCode));
-
         hotelPatchDto.getName().ifPresent(hotel::setName);
         hotelPatchDto.getLocation().ifPresent(hotel::setLocation);
-
-        Hotel updatedHotel = hotelRepository.save(hotel);
-
-        // Utiliza HotelUtils para convertir la entidad Hotel a HotelDto
-        return HotelUtils.convertToHotelDto(updatedHotel);
+        return modelMapper.map(hotelRepository.save(hotel), HotelDto.class);
     }
 
+    @Override
+    public List<HotelDto> getHotels(LocalDate dateFrom, LocalDate dateTo, String destination) {
+        List<Hotel> hotels;
 
+        if (dateFrom != null && dateTo != null) {
+            hotels = hotelRepository.findAvailableHotelsByDateRangeAndDestination(dateFrom, dateTo, destination);
+        } else {
+            hotels = (destination != null) ? hotelRepository.findByLocation(destination) : hotelRepository.findAll();
+        }
+
+        return hotels.stream()
+                .map(hotel -> {
+                    HotelDto dto = modelMapper.map(hotel, HotelDto.class);
+                    int totalRooms = (int) hotel.getRooms().stream().filter(room -> !room.getIsDeleted()).count();
+                    int availableRooms = (int) hotel.getRooms().stream()
+                            .filter(room -> !room.getIsDeleted() && room.getIsAvailable())
+                            .count();
+                    dto.setNumberOfRooms(totalRooms);
+                    dto.setAvailableRooms(availableRooms);
+                    return dto;
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public HotelDto getHotelDetails(String hotelCode) {
+        Hotel hotel = hotelRepository.findByHotelCode(hotelCode)
+                .orElseThrow(() -> new HotelNotFoundException("Hotel not found with code: " + hotelCode));
+
+        int numberOfRooms = (int) hotel.getRooms().stream().filter(room -> !room.getIsDeleted()).count();
+        int availableRooms = (int) hotel.getRooms().stream().filter(Room::getIsAvailable).filter(room -> !room.getIsDeleted()).count();
+
+        HotelDto hotelDetailDTO = modelMapper.map(hotel, HotelDto.class);
+        hotelDetailDTO.setNumberOfRooms(numberOfRooms);
+        hotelDetailDTO.setAvailableRooms(availableRooms);
+
+        return hotelDetailDTO;
+    }
 }

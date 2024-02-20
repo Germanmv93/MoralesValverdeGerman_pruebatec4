@@ -20,15 +20,13 @@ public class RoomUtils {
         return dto;
     }
 
-    public static Room convertToRoom(RoomDto dto, Hotel hotel) {
+    public static Room convertToRoom(RoomDto roomDto, Hotel hotel) {
         Room room = new Room();
-        room.setId(dto.getId()); // Asume que el ID es manejado automáticamente si es null
-        room.setRoomNumber(dto.getRoomNumber());
-        room.setRoomType(dto.getRoomType());
-        room.setPricePerNight(dto.getPricePerNight());
-        room.setIsAvailable(dto.getIsAvailable());
-        room.setIsDeleted(dto.getIsDeleted());
-        room.setHotel(hotel); // Asume que el hotel ya ha sido validado y cargado
+        room.setRoomNumber(roomDto.getRoomNumber());
+        room.setPricePerNight(roomDto.getPricePerNight());
+        room.setRoomType(roomDto.getRoomType());
+        room.setIsAvailable(roomDto.getIsAvailable());
+        room.setHotel(hotel); // Establece el hotel al que pertenece esta habitación
         return room;
     }
 }

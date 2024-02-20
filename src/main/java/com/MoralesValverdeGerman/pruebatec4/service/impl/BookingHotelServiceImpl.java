@@ -113,6 +113,7 @@ public class BookingHotelServiceImpl implements BookingHotelService {
         dto.setNights(booking.getNights());
         dto.setNumberOfGuest(booking.getNumberOfGuest());
         dto.setRoomType(booking.getRoom().getRoomType());
+        dto.setRoomNumber(booking.getRoom().getRoomNumber());
         // Asegúrate de que los métodos get en tu entidad BookingHotel estén correctamente implementados.
         return dto;
     }

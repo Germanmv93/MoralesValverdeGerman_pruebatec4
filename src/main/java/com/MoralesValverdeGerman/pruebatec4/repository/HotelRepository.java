@@ -9,11 +9,17 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface HotelRepository extends JpaRepository<Hotel,String> {
 
-    @Query("SELECT DISTINCT h FROM Hotel h JOIN h.rooms r WHERE h.location = :destination AND r.isDeleted = false AND r.isAvailable = TRUE AND NOT EXISTS (SELECT b FROM BookingHotel b WHERE b.room = r AND b.checkIn < :dateTo AND b.checkOut > :dateFrom)")
-    List<Hotel> findAvailableHotelsByDateRangeAndDestination(@Param("dateFrom") LocalDate dateFrom, @Param("dateTo") LocalDate dateTo, @Param("destination") String destination);
+public interface HotelRepository extends JpaRepository<Hotel,String> {
+    List<Hotel> findByLocation(String location);
+
     boolean existsByLocation(String location);
 
+    boolean existsByHotelCode(String hotelCode);
+
     Optional<Hotel> findByHotelCode(String hotelCode);
+
+    @Query("SELECT DISTINCT h FROM Hotel h JOIN h.rooms r WHERE h.location = :destination AND r.isDeleted = false AND r.isAvailable = TRUE " +
+            "AND NOT EXISTS (SELECT b FROM BookingHotel b WHERE b.room = r AND (b.checkIn <= :dateTo AND b.checkOut >= :dateFrom))")
+    List<Hotel> findAvailableHotelsByDateRangeAndDestination(@Param("dateFrom") LocalDate dateFrom, @Param("dateTo") LocalDate dateTo, @Param("destination") String destination);
 }
