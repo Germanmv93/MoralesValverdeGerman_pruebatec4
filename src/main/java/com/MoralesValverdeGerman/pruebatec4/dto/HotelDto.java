@@ -20,5 +20,5 @@ public class HotelDto {
     @NotBlank(message = "Hotel code cannot be empty")
     private String location;
     private int numberOfRooms;
-    private int availableRooms;
+//    private int availableRooms;
 }

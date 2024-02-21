@@ -29,6 +29,9 @@ public class BookingHotelServiceImpl implements BookingHotelService {
     @Autowired
     private BookingHotelRepository bookingHotelRepository;
 
+
+    private BookingHotelDto bookingHotelDto;
+
     @Autowired
     private HotelRepository hotelRepository;
 
@@ -41,7 +44,8 @@ public class BookingHotelServiceImpl implements BookingHotelService {
     @Override
     @Transactional
     public BookingHotelDto createBooking(BookingHotelDto bookingDto) {
-        // Validar ubicación del hotel
+
+        // Validar ubicación del hotel y otros detalles
         Hotel hotel = hotelRepository.findByHotelCode(bookingDto.getHotelCode())
                 .orElseThrow(() -> new HotelNotFoundException("Hotel with code " + bookingDto.getHotelCode() + " not found"));
 
@@ -49,38 +53,29 @@ public class BookingHotelServiceImpl implements BookingHotelService {
             throw new LocationMismatchException("Sorry, the hotel's location does not match the one registered in the database for this hotel.");
         }
 
-        // Validar número de noches
-        long daysBetween = ChronoUnit.DAYS.between(bookingDto.getCheckIn(), bookingDto.getCheckOut());
-        long correctNights = ChronoUnit.DAYS.between(bookingDto.getCheckIn(), bookingDto.getCheckOut());
-        if (daysBetween != bookingDto.getNights()) {
-            throw new InvalidDateException(String.format("The number of nights does not match the dates provided. (Check-in/Check-Out). The correct number of nights is %d.", correctNights));
-        }
-
         Set<String> allowedRoomTypes = Set.of("Individual", "Double", "Triple");
         if (!allowedRoomTypes.contains(bookingDto.getRoomType())) {
-            throw new RoomNotFoundException("Unknown room type: " + bookingDto.getRoomType() + ".\n The allowed room types are:\n Individual.\n Double.\n Triple.");
+            throw new RoomNotFoundException("Unknown room type: " + bookingDto.getRoomType());
         }
 
-        // Verificar disponibilidad de habitaciones
-        List<Room> availableRooms = roomRepository.findByHotel_HotelCodeAndHotel_LocationAndRoomTypeAndIsAvailable(
-                bookingDto.getHotelCode(), bookingDto.getLocation(), bookingDto.getRoomType(), true);
+        // Verificar disponibilidad de habitaciones para las fechas y tipo solicitados
+        List<Room> availableRooms = roomRepository.findAvailableRoomsByHotelCodeAndDates(
+                bookingDto.getHotelCode(), bookingDto.getCheckIn(), bookingDto.getCheckOut(), bookingDto.getRoomType());
 
         if (availableRooms.isEmpty()) {
-            throw new NoAvailableRoomException("Sorry, there are no rooms available.");
+            throw new NoAvailableRoomException("Sorry, there are no rooms available for the selected dates and room type.");
         }
 
-        // Seleccionar una habitación aleatoria
+        // Seleccionar una habitación aleatoriamente
         Room selectedRoom = availableRooms.get(new Random().nextInt(availableRooms.size()));
 
-        // Verificar capacidad
+        // Verificar capacidad de la habitación seleccionada
         if (bookingDto.getNumberOfGuest() > selectedRoom.getCapacity()) {
             throw new InsufficientRoomCapacityException("The selected room does not have enough capacity for the number of guests.");
         }
 
-        selectedRoom.setIsAvailable(false); // Cambiar isAvailable a false
-        roomRepository.save(selectedRoom); // Guardar
-
-        double pricePerNight = selectedRoom.getPricePerNight(); // Asume que este método/propiedad existe
+        // Aquí se continúa con la lógica de creación de la reserva...
+        double pricePerNight = selectedRoom.getPricePerNight(); // Asumiendo que este método exista
         double totalPrice = pricePerNight * bookingDto.getNights();
 
         // Crear y guardar la reserva
@@ -89,12 +84,15 @@ public class BookingHotelServiceImpl implements BookingHotelService {
         booking.setTotalPrice(totalPrice); // Establecer el precio total calculado
         BookingHotel savedBooking = bookingHotelRepository.save(booking);
 
-        // Mapear a BookingHotelDto para devolver, incluyendo el precio total
+        // Mapear a BookingHotelDto para devolver
         BookingHotelDto resultDto = modelMapper.map(savedBooking, BookingHotelDto.class);
-        resultDto.setTotalPrice(totalPrice); // Asegurarse de que el precio total se incluya en el DTO
+        resultDto.setTotalPrice(totalPrice);
 
         return resultDto;
     }
+
+
+
 
     public String deleteBooking(Long bookingId) {
         BookingHotel booking = bookingHotelRepository.findById(bookingId)

@@ -87,7 +87,6 @@ public class HotelServiceImpl implements HotelService {
                             .filter(room -> !room.getIsDeleted() && room.getIsAvailable())
                             .count();
                     dto.setNumberOfRooms(totalRooms);
-                    dto.setAvailableRooms(availableRooms);
                     return dto;
                 }).collect(Collectors.toList());
     }
@@ -102,7 +101,6 @@ public class HotelServiceImpl implements HotelService {
 
         HotelDto hotelDetailDTO = modelMapper.map(hotel, HotelDto.class);
         hotelDetailDTO.setNumberOfRooms(numberOfRooms);
-        hotelDetailDTO.setAvailableRooms(availableRooms);
 
         return hotelDetailDTO;
     }

@@ -25,6 +25,5 @@ public class BookingHotelDto {
     private int numberOfGuest;
     private Double totalPrice;
     private String roomType;
-    private String roomNumber;
-
+//    private String roomNumber;
 }
