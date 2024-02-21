@@ -13,5 +13,6 @@ public interface RoomService {
     List<RoomDto> findAllRooms();
     void deleteRoomFromHotel(String roomNumber, String hotelCode);
     void reactivateRoom(String roomNumber, String hotelCode);
+    Optional<RoomDto> findRoomById(Long id);
 
 }

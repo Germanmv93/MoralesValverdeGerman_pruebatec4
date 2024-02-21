@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/flight-booking")
+@RequestMapping("/agency/flight-booking")
 public class FlightBookingController {
 
     @Autowired
     private FlightBookingService flightBookingService;
 
     @PostMapping("/new")
-    public ResponseEntity<FlightBooking> createFlightBooking(@RequestBody FlightBookingDto bookingDto) {
-        FlightBooking booking = flightBookingService.bookFlight(bookingDto);
-        return new ResponseEntity<>(booking, HttpStatus.CREATED);
+    public ResponseEntity<FlightBookingDto> createFlightBooking(@RequestBody FlightBookingDto bookingDto) {
+        FlightBookingDto createdBooking = flightBookingService.bookFlight(bookingDto);
+        return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
     }
 }

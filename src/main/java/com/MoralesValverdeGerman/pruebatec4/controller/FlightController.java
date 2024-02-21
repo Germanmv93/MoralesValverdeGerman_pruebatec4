@@ -4,10 +4,12 @@ import com.MoralesValverdeGerman.pruebatec4.dto.FlightDto;
 import com.MoralesValverdeGerman.pruebatec4.exception.FlightNotFoundException;
 import com.MoralesValverdeGerman.pruebatec4.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -39,6 +41,16 @@ public class FlightController {
             // Aquí puedes manejar el error de forma más específica, por ejemplo, devolviendo un estado HTTP 404
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
+    }
+
+    @GetMapping("/agency/flights")
+    public ResponseEntity<List<FlightDto>> getFlights(
+            @RequestParam("dateFrom") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate dateFrom,
+            @RequestParam("dateTo") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate dateTo,
+            @RequestParam("origin") String origin,
+            @RequestParam("destination") String destination) {
+        List<FlightDto> flights = flightService.findFlights(dateFrom, dateTo, origin, destination);
+        return ResponseEntity.ok(flights);
     }
 }
 

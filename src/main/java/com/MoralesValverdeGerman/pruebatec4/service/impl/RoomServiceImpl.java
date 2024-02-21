@@ -3,6 +3,7 @@ package com.MoralesValverdeGerman.pruebatec4.service.impl;
 import com.MoralesValverdeGerman.pruebatec4.dto.RoomDto;
 import com.MoralesValverdeGerman.pruebatec4.entity.Hotel;
 import com.MoralesValverdeGerman.pruebatec4.entity.Room;
+import com.MoralesValverdeGerman.pruebatec4.exception.HotelNotFoundException;
 import com.MoralesValverdeGerman.pruebatec4.exception.RoomNotFoundException;
 import com.MoralesValverdeGerman.pruebatec4.repository.HotelRepository;
 import com.MoralesValverdeGerman.pruebatec4.repository.RoomRepository;
@@ -29,7 +30,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDto createRoom(RoomDto roomDto) {
         Optional<Hotel> hotel = hotelRepository.findByHotelCode(roomDto.getHotelCode());
-        hotel.orElseThrow(() -> new RuntimeException("Hotel not found with code: " + roomDto.getHotelCode()));
+        hotel.orElseThrow(() -> new HotelNotFoundException("Hotel not found with code: " + roomDto.getHotelCode()));
 
         roomRepository.findByRoomNumberAndHotel_HotelCode(roomDto.getRoomNumber(), roomDto.getHotelCode())
                 .ifPresent(r -> {
@@ -46,6 +47,11 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.findAll().stream()
                 .map(room -> modelMapper.map(room, RoomDto.class))
                 .collect(Collectors.toList());
+    }
+    @Override
+    public Optional<RoomDto> findRoomById(Long id) {
+        return roomRepository.findById(id)
+                .map(room -> modelMapper.map(room, RoomDto.class));
     }
     @Override
     public Optional<RoomDto> findByRoomNumberAndHotel_HotelCode(String roomNumber, String hotelCode) {

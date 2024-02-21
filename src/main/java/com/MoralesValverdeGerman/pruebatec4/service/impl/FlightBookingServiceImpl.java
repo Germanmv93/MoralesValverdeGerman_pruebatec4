@@ -5,10 +5,13 @@ import com.MoralesValverdeGerman.pruebatec4.dto.PassengerDto;
 import com.MoralesValverdeGerman.pruebatec4.entity.Flight;
 import com.MoralesValverdeGerman.pruebatec4.entity.FlightBooking;
 import com.MoralesValverdeGerman.pruebatec4.entity.Passenger;
+import com.MoralesValverdeGerman.pruebatec4.exception.FlightNotFoundException;
+import com.MoralesValverdeGerman.pruebatec4.exception.InsufficientSeatsException;
 import com.MoralesValverdeGerman.pruebatec4.repository.FlightBookingRepository;
 import com.MoralesValverdeGerman.pruebatec4.repository.FlightRepository;
 import com.MoralesValverdeGerman.pruebatec4.repository.PassengerRepository;
 import com.MoralesValverdeGerman.pruebatec4.service.FlightBookingService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,43 +31,40 @@ public class FlightBookingServiceImpl implements FlightBookingService {
     @Autowired
     private PassengerRepository passengerRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Transactional
     @Override
-    public FlightBooking bookFlight(FlightBookingDto bookingDto) {
-        Flight flight = flightRepository.findById(bookingDto.getFlightCode())
-                .orElseThrow(() -> new IllegalArgumentException("Flight not found with code: " + bookingDto.getFlightCode()));
+    public FlightBookingDto bookFlight(FlightBookingDto bookingDto) {
+        Flight flight = flightRepository.findByFlightCode(bookingDto.getFlightCode())
+                .orElseThrow(() -> new FlightNotFoundException("Flight not found with code: " + bookingDto.getFlightCode()));
 
-        // Calcula los asientos ya reservados
-        int seatsReserved = flight.getBookings().stream()
-                .mapToInt(FlightBooking::getNumberOfPassenger)
-                .sum();
-
-        // Verifica si hay suficientes asientos disponibles
-        if (bookingDto.getNumberOfPersons() + seatsReserved > flight.getSeats()) {
-            throw new IllegalStateException("Not enough seats available.");
+        // Ajuste en la línea siguiente: usa getNumberOfPassenger() en lugar de getNumberOfPersons()
+        int seatsReserved = flightBookingRepository.countByFlightFlightCode(bookingDto.getFlightCode());
+        if (bookingDto.getNumberOfPassenger() + seatsReserved > flight.getSeats()) {
+            throw new InsufficientSeatsException("Not enough seats available.");
         }
 
-        // Crea la reserva
-        FlightBooking booking = new FlightBooking();
-        booking.setNumberOfPassenger(bookingDto.getNumberOfPersons());
-        booking.setFlight(flight);
-        // Configura los pasajeros aquí
-        booking.setPassengers(convertPassengersDtoToEntities(bookingDto.getPassengers(), booking));
+        // Convierte directamente FlightBookingDto a FlightBooking
+        FlightBooking booking = modelMapper.map(bookingDto, FlightBooking.class);
+        booking.setFlight(flight); // Asegúrate de que el mapeo conserva la relación correcta
+
+        // Procesa y asigna los pasajeros
+        List<Passenger> passengers = bookingDto.getPassengers().stream()
+                .map(dto -> modelMapper.map(dto, Passenger.class))
+                .peek(passenger -> passenger.setBooking(booking))
+                .collect(Collectors.toList());
+        booking.setPassengers(passengers);
 
         // Guarda la reserva
-        return flightBookingRepository.save(booking);
+        FlightBooking savedBooking = flightBookingRepository.save(booking);
+
+        // Convierte la reserva guardada de vuelta a DTO para la respuesta
+        return modelMapper.map(savedBooking, FlightBookingDto.class);
     }
 
-    private List<Passenger> convertPassengersDtoToEntities(List<PassengerDto> passengerDtos, FlightBooking booking) {
-        return passengerDtos.stream().map(dto -> {
-            Passenger passenger = new Passenger();
-            passenger.setDni(dto.getDni());
-            passenger.setName(dto.getName());
-            passenger.setSurName(dto.getSurName());
-            passenger.setBooking(booking);
-            return passenger;
-        }).collect(Collectors.toList());
-    }
+
 }
 
 

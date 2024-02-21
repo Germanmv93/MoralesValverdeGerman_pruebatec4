@@ -1,6 +1,7 @@
 package com.MoralesValverdeGerman.pruebatec4.service.impl;
 
 import com.MoralesValverdeGerman.pruebatec4.dto.BookingHotelDto;
+import com.MoralesValverdeGerman.pruebatec4.dto.RoomDto;
 import com.MoralesValverdeGerman.pruebatec4.entity.BookingHotel;
 import com.MoralesValverdeGerman.pruebatec4.entity.Hotel;
 import com.MoralesValverdeGerman.pruebatec4.entity.Room;
@@ -9,6 +10,7 @@ import com.MoralesValverdeGerman.pruebatec4.repository.BookingHotelRepository;
 import com.MoralesValverdeGerman.pruebatec4.repository.RoomRepository;
 import com.MoralesValverdeGerman.pruebatec4.repository.HotelRepository;
 import com.MoralesValverdeGerman.pruebatec4.service.BookingHotelService;
+import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -27,24 +30,38 @@ public class BookingHotelServiceImpl implements BookingHotelService {
     private BookingHotelRepository bookingHotelRepository;
 
     @Autowired
-    private RoomRepository roomRepository;
-    @Autowired
     private HotelRepository hotelRepository;
 
+    @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public BookingHotel createBooking(BookingHotelDto bookingDto) {
-        Optional<Hotel> hotelOptional = hotelRepository.findByHotelCode(bookingDto.getHotelCode());
-        Hotel hotel = hotelOptional.orElseThrow(() -> new BookingHotelNotFoundException("Sorry, the hotel with ID " + bookingDto.getHotelCode() + " does not exist."));
+    @Transactional
+    public BookingHotelDto createBooking(BookingHotelDto bookingDto) {
+        // Validar ubicación del hotel
+        Hotel hotel = hotelRepository.findByHotelCode(bookingDto.getHotelCode())
+                .orElseThrow(() -> new HotelNotFoundException("Hotel with code " + bookingDto.getHotelCode() + " not found"));
 
         if (!hotel.getLocation().equalsIgnoreCase(bookingDto.getLocation())) {
             throw new LocationMismatchException("Sorry, the hotel's location does not match the one registered in the database for this hotel.");
         }
 
+        // Validar número de noches
         long daysBetween = ChronoUnit.DAYS.between(bookingDto.getCheckIn(), bookingDto.getCheckOut());
+        long correctNights = ChronoUnit.DAYS.between(bookingDto.getCheckIn(), bookingDto.getCheckOut());
         if (daysBetween != bookingDto.getNights()) {
-            throw new InvalidDateException("The number of nights does not match the dates provided. (Check-in/Check-Out)");
+            throw new InvalidDateException(String.format("The number of nights does not match the dates provided. (Check-in/Check-Out). The correct number of nights is %d.", correctNights));
         }
 
+        Set<String> allowedRoomTypes = Set.of("Individual", "Double", "Triple");
+        if (!allowedRoomTypes.contains(bookingDto.getRoomType())) {
+            throw new RoomNotFoundException("Unknown room type: " + bookingDto.getRoomType() + ".\n The allowed room types are:\n Individual.\n Double.\n Triple.");
+        }
+
+        // Verificar disponibilidad de habitaciones
         List<Room> availableRooms = roomRepository.findByHotel_HotelCodeAndHotel_LocationAndRoomTypeAndIsAvailable(
                 bookingDto.getHotelCode(), bookingDto.getLocation(), bookingDto.getRoomType(), true);
 
@@ -52,37 +69,36 @@ public class BookingHotelServiceImpl implements BookingHotelService {
             throw new NoAvailableRoomException("Sorry, there are no rooms available.");
         }
 
-        // Seleccionar una habitación aleatoria de la lista de habitaciones disponibles
+        // Seleccionar una habitación aleatoria
         Room selectedRoom = availableRooms.get(new Random().nextInt(availableRooms.size()));
 
-        // Verificar la capacidad de la habitación seleccionada
+        // Verificar capacidad
         if (bookingDto.getNumberOfGuest() > selectedRoom.getCapacity()) {
-            throw new InsufficientRoomCapacityException("La habitación seleccionada no tiene suficiente capacidad para el número de huéspedes.");
+            throw new InsufficientRoomCapacityException("The selected room does not have enough capacity for the number of guests.");
         }
 
-        BookingHotel booking = new BookingHotel();
-        booking.setRoom(selectedRoom);
-        booking.setCheckIn(bookingDto.getCheckIn());
-        booking.setCheckOut(bookingDto.getCheckOut());
-        booking.setHotelCode(bookingDto.getHotelCode());
-        booking.setLocation(bookingDto.getLocation());
-        booking.setNights(bookingDto.getNights());
-        booking.setNumberOfGuest(bookingDto.getNumberOfGuest());
+        selectedRoom.setIsAvailable(false); // Cambiar isAvailable a false
+        roomRepository.save(selectedRoom); // Guardar
 
-        // Calcular el precio total de la reserva
-        double totalPrice = selectedRoom.getPricePerNight() * bookingDto.getNights();
-        booking.setTotalPrice(totalPrice);
+        double pricePerNight = selectedRoom.getPricePerNight(); // Asume que este método/propiedad existe
+        double totalPrice = pricePerNight * bookingDto.getNights();
 
-        // Aquí, podrías marcar la habitación como no disponible si es necesario
-        selectedRoom.setIsAvailable(false);
-        roomRepository.save(selectedRoom);
+        // Crear y guardar la reserva
+        BookingHotel booking = modelMapper.map(bookingDto, BookingHotel.class);
+        booking.setRoom(selectedRoom); // Asignar la habitación seleccionada a la reserva
+        booking.setTotalPrice(totalPrice); // Establecer el precio total calculado
+        BookingHotel savedBooking = bookingHotelRepository.save(booking);
 
-        return bookingHotelRepository.save(booking);
+        // Mapear a BookingHotelDto para devolver, incluyendo el precio total
+        BookingHotelDto resultDto = modelMapper.map(savedBooking, BookingHotelDto.class);
+        resultDto.setTotalPrice(totalPrice); // Asegurarse de que el precio total se incluya en el DTO
+
+        return resultDto;
     }
 
     public String deleteBooking(Long bookingId) {
         BookingHotel booking = bookingHotelRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Reservation not found. Please check the details and try again."));
+                .orElseThrow(() -> new BookingNotFoundException("Sorry, reservation not found. Please check the details and try again."));
 
         Room room = booking.getRoom();
         room.setIsAvailable(true); // Asume que tienes un setter para cambiar el estado
@@ -96,30 +112,10 @@ public class BookingHotelServiceImpl implements BookingHotelService {
     @Override
     public List<BookingHotelDto> getAllBookingsDto() {
         List<BookingHotel> bookings = bookingHotelRepository.findAll();
-        // Convierte la lista de entidades a una lista de DTOs
-        List<BookingHotelDto> bookingDtos = bookings.stream()
-                .map(this::convertToDto)
+        return bookings.stream()
+                .map(booking -> modelMapper.map(booking, BookingHotelDto.class))
                 .collect(Collectors.toList());
-        return bookingDtos;
     }
-
-    private BookingHotelDto convertToDto(BookingHotel booking) {
-        BookingHotelDto dto = new BookingHotelDto();
-        dto.setId(booking.getId());
-        dto.setCheckIn(booking.getCheckIn());
-        dto.setCheckOut(booking.getCheckOut());
-        dto.setLocation(booking.getLocation());
-        dto.setHotelCode(booking.getHotelCode());
-        dto.setNights(booking.getNights());
-        dto.setNumberOfGuest(booking.getNumberOfGuest());
-        dto.setRoomType(booking.getRoom().getRoomType());
-        dto.setRoomNumber(booking.getRoom().getRoomNumber());
-        // Asegúrate de que los métodos get en tu entidad BookingHotel estén correctamente implementados.
-        return dto;
-    }
-
-
-
 }
 
 

@@ -45,10 +45,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleBookingHotelNotFoundException(BookingHotelNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(NoAvailableHotelsException.class)
     public ResponseEntity<Object> handleNoAvailableHotelsException(NoAvailableHotelsException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(LocationMismatchException.class)
     public ResponseEntity<?> handleLocationMismatchException(LocationMismatchException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -58,6 +60,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleInsufficientRoomCapacityException(InsufficientRoomCapacityException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(BookingNotFoundException.class)
+    public ResponseEntity<Object> handleBookingNotFoundException(BookingNotFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InsufficientSeatsException.class)
+    public ResponseEntity<?> handleInsufficientSeatsException(InsufficientSeatsException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FlightNotFoundException.class)
+    public ResponseEntity<?> handleFlightNotFoundException(FlightNotFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(

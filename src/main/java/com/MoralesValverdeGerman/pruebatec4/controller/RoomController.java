@@ -18,7 +18,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/api/rooms")
+@RequestMapping("/agency/rooms")
 public class RoomController {
 
     @Autowired
@@ -32,40 +32,11 @@ public class RoomController {
         List<RoomDto> rooms = roomService.findAllRooms();
         return ResponseEntity.ok(rooms);
     }
-
-//Metodo que me funciona bien de momento.
-
-//    @PostMapping
-//    public ResponseEntity<String> createRoom(@Validated @RequestBody Room room) {
-//        Hotel hotel = hotelService.findHotelByCode(room.getHotel().getHotelCode());
-//        if (hotel == null) {
-//            return ResponseEntity.badRequest().body("El hotel especificado no existe.");
-//        }
-//
-//        Optional<Room> existingRoom = roomService.findByRoomNumberAndHotel_HotelCode(room.getRoomNumber(), hotel.getHotelCode());
-//        if (existingRoom.isPresent()) {
-//            return ResponseEntity.badRequest().body("Room with number " + room.getRoomNumber() + " already exists in hotel " + hotel.getHotelCode() + ".");
-//        }
-//
-//        room.setHotel(hotel);
-//        Room savedRoom = roomService.saveRoom(room);
-//
-//        String message = String.format("Room No. %s has been successfully added to Hotel %s.", savedRoom.getRoomNumber(), hotel.getHotelCode());
-//        return ResponseEntity.ok(message);
-//    }
-
-
-    @PostMapping
+    @PostMapping("/new")
     public ResponseEntity<RoomDto> createRoom(@Valid @RequestBody RoomDto roomDto) {
         RoomDto savedRoom = roomService.createRoom(roomDto);
         return new ResponseEntity<>(savedRoom, HttpStatus.CREATED);
     }
-
-
-
-
-
-
     @DeleteMapping("/{roomNumber}/hotel/{hotelCode}")
     public ResponseEntity<String> deleteRoomFromHotel(@PathVariable String roomNumber, @PathVariable String hotelCode) {
         try {
@@ -84,7 +55,12 @@ public class RoomController {
         return ResponseEntity.ok("Room number " + roomNumber + " in hotel " + hotelCode + " has been successfully reactivated.");
     }
 
-
+    @GetMapping("/{id}")
+    public ResponseEntity<RoomDto> getRoomById(@PathVariable Long id) {
+        return roomService.findRoomById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
 
 }

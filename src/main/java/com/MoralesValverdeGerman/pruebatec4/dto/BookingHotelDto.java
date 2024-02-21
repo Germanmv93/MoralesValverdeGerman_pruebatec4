@@ -23,6 +23,7 @@ public class BookingHotelDto {
     private String hotelCode;
     private int nights;
     private int numberOfGuest;
+    private Double totalPrice;
     private String roomType;
     private String roomNumber;
 
