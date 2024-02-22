@@ -21,7 +21,7 @@ Para lanzar el proyecto se deben seguir los siguientes pasos:
 1. Clonar o descargar este repositorio.
 2. Importarlo en el IDE IntelliJ.
 3. Realizar un Clean and build del proyecto para asegurarse de que todas las dependencias se descarguen e instalen correctamente.
-4. Crear la base de datos "pruebatec4" en PhpMyAdmin o subir el archivo pruebatec4.sql que encontrara [Click aquí](https://github.com/Germanmv93/MoralesValverdeGerman_pruebatec4/tree/master/Recursos)
+4. Crear la base de datos "pruebatec4" en PhpMyAdmin o subir el archivo pruebatec4.sql que encontrara [aquí](https://github.com/Germanmv93/MoralesValverdeGerman_pruebatec4/tree/master/Recursos)
 
 5. Lanzar el proyecto con el botón correspondiente del IDE.
 
