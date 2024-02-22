@@ -48,7 +48,6 @@ public class FlightBookingServiceImpl implements FlightBookingService {
         }
 
 
-        // Ajuste en la línea siguiente: usa getNumberOfPassenger() en lugar de getNumberOfPersons()
         int seatsReserved = flightBookingRepository.countByFlightFlightCode(bookingDto.getFlightCode());
         if (bookingDto.getNumberOfPassenger() + seatsReserved > flight.getSeats()) {
             throw new InsufficientSeatsException("Not enough seats available.");
@@ -58,7 +57,7 @@ public class FlightBookingServiceImpl implements FlightBookingService {
         booking.setFlight(flight);
         double totalPrice = flight.getPricePerSeat() * bookingDto.getNumberOfPassenger();
 
-        booking.setTotalPrice(totalPrice); // Asegúrate de que FlightBooking tenga un campo para totalPrice
+        booking.setTotalPrice(totalPrice);
 
         List<Passenger> passengers = bookingDto.getPassengers().stream()
                 .map(dto -> modelMapper.map(dto, Passenger.class))
@@ -75,10 +74,8 @@ public class FlightBookingServiceImpl implements FlightBookingService {
         FlightBooking booking = flightBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new FlightBookingNotFoundException("No flight booking found with id: " + bookingId));
 
-        // Elimina los pasajeros asociados a la reserva
         passengerRepository.deleteByBookingId(bookingId);
 
-        // Elimina la reserva de vuelo
         flightBookingRepository.delete(booking);
 
         return "Your flight booking has been successfully deleted.";

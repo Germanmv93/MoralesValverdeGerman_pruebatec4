@@ -97,7 +97,6 @@ public class HotelServiceImpl implements HotelService {
                 .orElseThrow(() -> new HotelNotFoundException("Hotel not found with code: " + hotelCode));
 
         int numberOfRooms = (int) hotel.getRooms().stream().filter(room -> !room.getIsDeleted()).count();
-        int availableRooms = (int) hotel.getRooms().stream().filter(Room::getIsAvailable).filter(room -> !room.getIsDeleted()).count();
 
         HotelDto hotelDetailDTO = modelMapper.map(hotel, HotelDto.class);
         hotelDetailDTO.setNumberOfRooms(numberOfRooms);

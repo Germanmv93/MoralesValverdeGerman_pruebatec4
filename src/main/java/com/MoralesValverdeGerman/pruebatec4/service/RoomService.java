@@ -1,9 +1,6 @@
 package com.MoralesValverdeGerman.pruebatec4.service;
 
-import com.MoralesValverdeGerman.pruebatec4.dto.HotelDto;
 import com.MoralesValverdeGerman.pruebatec4.dto.RoomDto;
-
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 

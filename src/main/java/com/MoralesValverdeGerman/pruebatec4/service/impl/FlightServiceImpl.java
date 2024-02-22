@@ -11,9 +11,7 @@ import com.MoralesValverdeGerman.pruebatec4.entity.FlightBooking;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,23 +33,19 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public FlightDto createFlight(FlightDto flightDto) {
 
-        // Verificar si el vuelo ya existe en la base de datos
+
         Optional<Flight> existingFlight = flightRepository.findById(flightDto.getFlightCode());
         if (existingFlight.isPresent()) {
-            // Si el vuelo ya existe, lanzar una excepción con el mensaje deseado
             throw new FlightAlreadyExistsException("The flight with flight code " + flightDto.getFlightCode() + " already exists.");
         }
 
-        // Si el vuelo no existe, proceder a crearlo
         Flight flight = new Flight();
         BeanUtils.copyProperties(flightDto, flight);
-        // La siguiente línea guarda el vuelo en la base de datos
+
         flight = flightRepository.save(flight);
-        // Actualizar el DTO con información posiblemente actualizada durante el guardado
         BeanUtils.copyProperties(flight, flightDto);
         return flightDto;
     }
-
 
     public void deleteFlight(String flightCode) {
         Flight flight = flightRepository.findById(flightCode)
@@ -71,7 +65,7 @@ public class FlightServiceImpl implements FlightService {
                     .stream()
                     .mapToInt(FlightBooking::getNumberOfPassenger)
                     .sum();
-            dto.setSeats(flight.getSeats() - seatsReserved); // Ajusta el número de asientos disponibles
+            dto.setSeats(flight.getSeats() - seatsReserved);
             return dto;
         }).collect(Collectors.toList());
     }

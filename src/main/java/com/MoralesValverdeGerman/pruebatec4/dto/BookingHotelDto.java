@@ -15,9 +15,9 @@ import java.time.LocalDate;
 public class BookingHotelDto {
 
     private Long id;
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate checkIn;
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate checkOut;
     private String location;
     private String hotelCode;
@@ -25,5 +25,4 @@ public class BookingHotelDto {
     private int numberOfGuest;
     private Double totalPrice;
     private String roomType;
-//    private String roomNumber;
 }

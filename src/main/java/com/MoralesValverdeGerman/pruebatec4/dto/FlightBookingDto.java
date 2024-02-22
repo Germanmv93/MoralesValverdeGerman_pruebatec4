@@ -21,7 +21,7 @@ public class FlightBookingDto {
     private String origin;
     private String destination;
     private String flightCode;
-    private String seatType; // Tipo de asiento, por ejemplo, Economy
+    private String seatType;
     private Double totalPrice;
-    private List<PassengerDto> passengers; // Lista de pasajeros
+    private List<PassengerDto> passengers;
 }

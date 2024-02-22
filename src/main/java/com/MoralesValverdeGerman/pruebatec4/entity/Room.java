@@ -15,16 +15,16 @@ import java.util.Set;
 @Entity
 public class Room {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Genera automáticamente el ID.
-    private Long id; // ID único para cada habitación.
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String roomNumber; // Número de la habitación, ya no es único globalmente.
+    private String roomNumber;
 
-    private Double pricePerNight; // Precio por noche de la habitación.
+    private Double pricePerNight;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Relación Muchos a Uno con Hotel.
-    @JoinColumn(name = "hotel_hotelCode", nullable = false) // Clave foránea que referencia a Hotel.
-    private Hotel hotel; // El hotel al que pertenece esta habitación.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_hotelCode", nullable = false)
+    private Hotel hotel;
 
     private String roomType;
     private int capacity;

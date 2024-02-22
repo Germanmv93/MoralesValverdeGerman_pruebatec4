@@ -25,8 +25,8 @@ public class FlightBooking {
     @ManyToOne
     @JoinColumn(name = "flight_code")
     @JsonBackReference
-    private Flight flight; // El vuelo asociado a esta reserva
+    private Flight flight;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Passenger> passengers; // Lista de pasajeros de la reserva
+    private List<Passenger> passengers;
 }

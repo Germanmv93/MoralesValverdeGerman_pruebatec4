@@ -26,5 +26,5 @@ public class Passenger {
     @ManyToOne
     @JoinColumn(name = "booking_id")
     @JsonIgnore
-    private FlightBooking booking; // La reserva a la que pertenece el pasajero
+    private FlightBooking booking;
 }

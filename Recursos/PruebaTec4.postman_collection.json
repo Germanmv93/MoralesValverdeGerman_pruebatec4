@@ -1,0 +1,864 @@
+{
+	"info": {
+		"_postman_id": "1dde7406-c1cb-4475-86bc-f4ceaddab8ed",
+		"name": "PruebaTec4",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32574143"
+	},
+	"item": [
+		{
+			"name": "Hotel",
+			"item": [
+				{
+					"name": "CrearHotel",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"hotelCode\": \"GHM\",\r\n    \"name\": \"Gran Hotel Miramar\",\r\n    \"location\": \"Málaga\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/hotels/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotels",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TraerHoteles",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/hotels",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BorrarHotel",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/hotels/delete/HCC-2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotels",
+								"delete",
+								"HCC-2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ModificarHotel",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Cordoba Palacio\",\r\n    \"location\": \"Cordoba baja\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/hotels/Cor1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotels",
+								"Cor1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Room",
+			"item": [
+				{
+					"name": "CrearHabitacion",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"roomNumber\": \"201\",\r\n  \"pricePerNight\": 50.00,\r\n  \"roomType\": \"Individual\",\r\n  \"isAvailable\": true,\r\n  \"isDeleted\": false,\r\n  \"hotelCode\": \"GHM\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/rooms/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"rooms",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TraerHabitaciones",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/rooms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TraerHabitacionPorId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/rooms/48",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"rooms",
+								"48"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarHabitacion",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/rooms/101/hotel/arts001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"rooms",
+								"101",
+								"hotel",
+								"arts001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReactivarHabitacion",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/rooms/101/hotel/ARTS001/reactivate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"rooms",
+								"101",
+								"hotel",
+								"ARTS001",
+								"reactivate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reserva",
+			"item": [
+				{
+					"name": "CrearReserva",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"checkIn\": \"02/10/2024\",\r\n  \"checkOut\": \"09/10/2024\",\r\n  \"hotelCode\": \"Cor1\",\r\n  \"location\":\"Cordoba baja\",\r\n  \"nights\": 7,\r\n  \"numberOfGuest\": 2,\r\n  \"roomType\": \"Double\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/hotel-booking/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotel-booking",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarReserva",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/hotel-booking/46",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotel-booking",
+								"46"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TraerReservas",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/hotel-booking",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotel-booking"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vuelo",
+			"item": [
+				{
+					"name": "CrearVuelo",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"flightCode\": \"Air-45\",\r\n  \"date\": \"15/04/2024\",\r\n  \"origin\": \"Madrid\",\r\n  \"destination\": \"Paris\",\r\n  \"seats\": 20,\r\n  \"seatType\": \"Economy\",\r\n  \"pricePerSeat\":\"85.00\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/flights",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"flights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BorrarVuelo",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/flights/Air-33",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"flights",
+								"Air-33"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TraerVuelos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/flights",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"flights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReservaDeVuelo",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"date\": \"12/04/2024\",\r\n  \"origin\": \"Madrid\",\r\n  \"destination\": \"Paris\",\r\n  \"flightCode\": \"Air-45\",\r\n  \"numberOfPassenger\": 2,\r\n  \"seatType\": \"Economy\",\r\n  \"passengers\": [\r\n    {\r\n      \"dni\": \"126A\",\r\n      \"name\": \"Juan\",\r\n      \"surName\": \"Pérez\"\r\n    },\r\n    {\r\n      \"dni\": \"871B\",\r\n      \"name\": \"Ana\",\r\n      \"surName\": \"García\"\r\n    }\r\n  ]\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/flight-booking/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"flight-booking",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarReservaDeVuelo",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/flight-booking/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"flight-booking",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserHistory",
+			"item": [
+				{
+					"name": "User Story Nº 1:  Obtener un listado de todos los hoteles registrados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/hotels",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Story Nº 2:  Obtener un listado de todos los hoteles disponibles en un determinado rango de fechas y según el destino seleccionado.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/hotels?dateFrom=01/01/2024&dateTo=02/01/2024&destination=Cordoba",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotels"
+							],
+							"query": [
+								{
+									"key": "dateFrom",
+									"value": "01/01/2024"
+								},
+								{
+									"key": "dateTo",
+									"value": "02/01/2024"
+								},
+								{
+									"key": "destination",
+									"value": "Cordoba"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Story Nº 3: Realizar una reserva de un hotel, indicando cantidad de personas, fecha de entrada, fecha de salida y tipo de habitación. Obtener como respuesta el monto total de la reserva realizada",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"checkIn\": \"02/01/2024\",\r\n  \"checkOut\": \"08/01/2024\",\r\n  \"hotelCode\": \"H10\",\r\n  \"location\":\"Cordoba\",\r\n  \"nights\": 6,\r\n  \"numberOfGuest\": 3,\r\n  \"roomType\": \"Triple\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/hotel-booking/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"hotel-booking",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Story Nº 4:  Obtener un listado de todos los vuelos registrados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/flights",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"flights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Story Nº 5: Obtener un listado de todos los vuelos disponibles en un determinado rango de fechas y según el destino y el origen seleccionados.",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/agency/flights/agency/flights?dateFrom=15/04/2024&dateTo=16/04/2024&origin=Madrid&destination=Paris",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"flights",
+								"agency",
+								"flights"
+							],
+							"query": [
+								{
+									"key": "dateFrom",
+									"value": "15/04/2024"
+								},
+								{
+									"key": "dateTo",
+									"value": "16/04/2024"
+								},
+								{
+									"key": "origin",
+									"value": "Madrid"
+								},
+								{
+									"key": "destination",
+									"value": "Paris"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Story Nº 6:  Realizar una reserva de un vuelo, indicando cantidad de personas, origen, destino y fecha de ida. Obtener como respuesta el monto total de la reserva realizada.",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"date\": \"12/04/2024\",\r\n  \"origin\": \"Madrid\",\r\n  \"destination\": \"Paris\",\r\n  \"flightCode\": \"Air-45\",\r\n  \"numberOfPassenger\": 2,\r\n  \"seatType\": \"Economy\",\r\n  \"passengers\": [\r\n    {\r\n      \"dni\": \"25688556A\",\r\n      \"name\": \"Germán\",\r\n      \"surName\": \"Morales\"\r\n    },\r\n    {\r\n      \"dni\": \"6564212B\",\r\n      \"name\": \"Sandra\",\r\n      \"surName\": \"García\"\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/agency/flight-booking/new",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"agency",
+								"flight-booking",
+								"new"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

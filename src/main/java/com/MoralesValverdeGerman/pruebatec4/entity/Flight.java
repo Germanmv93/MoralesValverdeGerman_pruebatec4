@@ -30,5 +30,5 @@ public class Flight {
 
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private Set<FlightBooking> bookings; // Reservas asociadas a este vuelo
+    private Set<FlightBooking> bookings;
 }

@@ -45,7 +45,7 @@ public class BookingHotelServiceImpl implements BookingHotelService {
     @Transactional
     public BookingHotelDto createBooking(BookingHotelDto bookingDto) {
 
-        // Validar ubicación del hotel y otros detalles
+
         Hotel hotel = hotelRepository.findByHotelCode(bookingDto.getHotelCode())
                 .orElseThrow(() -> new HotelNotFoundException("Hotel with code " + bookingDto.getHotelCode() + " not found"));
 
@@ -64,7 +64,6 @@ public class BookingHotelServiceImpl implements BookingHotelService {
             throw new RoomNotFoundException("Unknown room type: " + bookingDto.getRoomType() + ".\n The allowed room types are:\n Individual.\n Double.\n Triple.");
         }
 
-        // Verificar disponibilidad de habitaciones para las fechas y tipo solicitados
         List<Room> availableRooms = roomRepository.findAvailableRoomsByHotelCodeAndDates(
                 bookingDto.getHotelCode(), bookingDto.getCheckIn(), bookingDto.getCheckOut(), bookingDto.getRoomType());
 
@@ -72,22 +71,19 @@ public class BookingHotelServiceImpl implements BookingHotelService {
             throw new NoAvailableRoomException("Sorry, there are no rooms available for the selected dates and room type.");
         }
 
-        // Seleccionar una habitación aleatoriamente
         Room selectedRoom = availableRooms.get(new Random().nextInt(availableRooms.size()));
 
-        // Verificar capacidad de la habitación seleccionada
         if (bookingDto.getNumberOfGuest() > selectedRoom.getCapacity()) {
             throw new InsufficientRoomCapacityException("The selected room does not have enough capacity for the number of guests.");
         }
 
-        // Aquí se continúa con la lógica de creación de la reserva...
-        double pricePerNight = selectedRoom.getPricePerNight(); // Asumiendo que este método exista
+        double pricePerNight = selectedRoom.getPricePerNight();
         double totalPrice = pricePerNight * bookingDto.getNights();
 
         // Crear y guardar la reserva
         BookingHotel booking = modelMapper.map(bookingDto, BookingHotel.class);
-        booking.setRoom(selectedRoom); // Asignar la habitación seleccionada a la reserva
-        booking.setTotalPrice(totalPrice); // Establecer el precio total calculado
+        booking.setRoom(selectedRoom);
+        booking.setTotalPrice(totalPrice);
         BookingHotel savedBooking = bookingHotelRepository.save(booking);
 
         // Mapear a BookingHotelDto para devolver
@@ -101,7 +97,7 @@ public class BookingHotelServiceImpl implements BookingHotelService {
                 .orElseThrow(() -> new BookingNotFoundException("Sorry, reservation not found. Please check the details and try again."));
 
         Room room = booking.getRoom();
-        room.setIsAvailable(true); // Asume que tienes un setter para cambiar el estado
+        room.setIsAvailable(true);
         roomRepository.save(room);
 
         bookingHotelRepository.delete(booking);
