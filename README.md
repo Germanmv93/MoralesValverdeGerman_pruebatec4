@@ -25,6 +25,8 @@ Para lanzar el proyecto se deben seguir los siguientes pasos:
 
 5. Lanzar el proyecto con el botón correspondiente del IDE.
 
+[##Swagger](http://localhost:8080/doc/swagger-ui/index.html)
+
 ## Postman
 
   - **Hotel**
