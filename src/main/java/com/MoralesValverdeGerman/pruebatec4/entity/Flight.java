@@ -26,6 +26,7 @@ public class Flight {
     private String destination;
     private int seats;
     private String seatType;
+    private Double pricePerSeat;
 
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

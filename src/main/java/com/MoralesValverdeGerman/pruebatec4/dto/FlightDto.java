@@ -20,5 +20,6 @@ public class FlightDto {
     private String destination;
     private int seats;
     private String seatType;
+    private Double pricePerSeat;
 }
 

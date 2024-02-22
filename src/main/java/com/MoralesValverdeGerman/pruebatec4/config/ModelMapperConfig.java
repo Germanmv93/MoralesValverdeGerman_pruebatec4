@@ -13,8 +13,7 @@ public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-
-        // Personaliza el mapeo para FlightBooking a FlightBookingDto
+        
         modelMapper.addMappings(new PropertyMap<FlightBooking, FlightBookingDto>() {
             @Override
             protected void configure() {
@@ -22,7 +21,6 @@ public class ModelMapperConfig {
                 map().setOrigin(source.getFlight().getOrigin());
                 map().setDestination(source.getFlight().getDestination());
                 map().setSeatType(source.getFlight().getSeatType());
-                // Asegúrate de agregar aquí cualquier otro mapeo personalizado necesario
             }
         });
 

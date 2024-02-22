@@ -60,7 +60,6 @@ public class FlightController {
             String message = String.format("The flight with flight code %s has been successfully deleted from the database.", flightCode);
             return ResponseEntity.ok(message);
         } catch (FlightNotFoundException ex) {
-            // Aquí puedes manejar el error de forma más específica, por ejemplo, devolviendo un estado HTTP 404
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }

@@ -21,14 +21,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/agency/hotel-booking")
 @Tag(name = "Bookings Hotels", description = "Booking management API")
 public class BookingHotelController {
     @Autowired
     private BookingHotelService bookingHotelService;
     @Autowired
     private RoomRepository roomRepository;
-    @PostMapping
+    @PostMapping("/new")
     @Operation(summary = "Create a booking", description = "Create a new booking with the given details")
     public ResponseEntity<BookingHotelDto> createBooking(@RequestBody BookingHotelDto bookingDto) {
         BookingHotelDto createdBookingDto = bookingHotelService.createBooking(bookingDto);
@@ -46,7 +46,5 @@ public class BookingHotelController {
         List<BookingHotelDto> bookingDtos = bookingHotelService.getAllBookingsDto();
         return ResponseEntity.ok(bookingDtos);
     }
-
-
 }
 

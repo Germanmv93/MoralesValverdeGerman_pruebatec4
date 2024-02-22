@@ -2,6 +2,7 @@ package com.MoralesValverdeGerman.pruebatec4.service.impl;
 
 import com.MoralesValverdeGerman.pruebatec4.dto.FlightDto;
 import com.MoralesValverdeGerman.pruebatec4.entity.Flight;
+import com.MoralesValverdeGerman.pruebatec4.exception.FlightAlreadyExistsException;
 import com.MoralesValverdeGerman.pruebatec4.exception.FlightNotFoundException;
 import com.MoralesValverdeGerman.pruebatec4.repository.FlightBookingRepository;
 import com.MoralesValverdeGerman.pruebatec4.repository.FlightRepository;
@@ -38,7 +39,7 @@ public class FlightServiceImpl implements FlightService {
         Optional<Flight> existingFlight = flightRepository.findById(flightDto.getFlightCode());
         if (existingFlight.isPresent()) {
             // Si el vuelo ya existe, lanzar una excepción con el mensaje deseado
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The flight with flight code " + flightDto.getFlightCode() + " already exists.");
+            throw new FlightAlreadyExistsException("The flight with flight code " + flightDto.getFlightCode() + " already exists.");
         }
 
         // Si el vuelo no existe, proceder a crearlo
@@ -61,6 +62,9 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public List<FlightDto> findAllFlights() {
         List<Flight> flights = flightRepository.findAll();
+        if (flights.isEmpty()) {
+            throw new FlightNotFoundException("No flights found for the specified criteria.");
+        }
         return flights.stream().map(flight -> {
             FlightDto dto = modelMapper.map(flight, FlightDto.class);
             int seatsReserved = flightBookingRepository.findByFlightFlightCode(flight.getFlightCode())

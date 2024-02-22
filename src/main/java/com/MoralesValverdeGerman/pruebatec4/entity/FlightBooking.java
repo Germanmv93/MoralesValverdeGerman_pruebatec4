@@ -20,6 +20,7 @@ public class FlightBooking {
     private Long id;
 
     private int numberOfPassenger;
+    private Double totalPrice;
 
     @ManyToOne
     @JoinColumn(name = "flight_code")

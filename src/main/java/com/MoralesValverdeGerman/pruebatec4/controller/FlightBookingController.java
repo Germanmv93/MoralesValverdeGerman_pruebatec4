@@ -11,10 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/agency/flight-booking")
@@ -35,5 +32,11 @@ public class FlightBookingController {
     public ResponseEntity<FlightBookingDto> createFlightBooking(@RequestBody FlightBookingDto bookingDto) {
         FlightBookingDto createdBooking = flightBookingService.bookFlight(bookingDto);
         return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{bookingId}")
+    public ResponseEntity<String> deleteFlightBooking(@PathVariable Long bookingId) {
+        String message = flightBookingService.deleteFlightBooking(bookingId);
+        return ResponseEntity.ok(message);
     }
 }

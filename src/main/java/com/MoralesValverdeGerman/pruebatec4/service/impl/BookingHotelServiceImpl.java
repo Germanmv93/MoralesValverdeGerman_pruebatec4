@@ -53,9 +53,15 @@ public class BookingHotelServiceImpl implements BookingHotelService {
             throw new LocationMismatchException("Sorry, the hotel's location does not match the one registered in the database for this hotel.");
         }
 
+        long daysBetween = ChronoUnit.DAYS.between(bookingDto.getCheckIn(), bookingDto.getCheckOut());
+        long correctNights = ChronoUnit.DAYS.between(bookingDto.getCheckIn(), bookingDto.getCheckOut());
+        if (daysBetween != bookingDto.getNights()) {
+            throw new InvalidDateException(String.format("The number of nights does not match the dates provided. (Check-in/Check-Out). The correct number of nights is %d.", correctNights));
+        }
+
         Set<String> allowedRoomTypes = Set.of("Individual", "Double", "Triple");
         if (!allowedRoomTypes.contains(bookingDto.getRoomType())) {
-            throw new RoomNotFoundException("Unknown room type: " + bookingDto.getRoomType());
+            throw new RoomNotFoundException("Unknown room type: " + bookingDto.getRoomType() + ".\n The allowed room types are:\n Individual.\n Double.\n Triple.");
         }
 
         // Verificar disponibilidad de habitaciones para las fechas y tipo solicitados
@@ -90,10 +96,6 @@ public class BookingHotelServiceImpl implements BookingHotelService {
 
         return resultDto;
     }
-
-
-
-
     public String deleteBooking(Long bookingId) {
         BookingHotel booking = bookingHotelRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Sorry, reservation not found. Please check the details and try again."));
@@ -110,6 +112,9 @@ public class BookingHotelServiceImpl implements BookingHotelService {
     @Override
     public List<BookingHotelDto> getAllBookingsDto() {
         List<BookingHotel> bookings = bookingHotelRepository.findAll();
+        if (bookings.isEmpty()) {
+            throw new BookingNotFoundException("No bookings found");
+        }
         return bookings.stream()
                 .map(booking -> modelMapper.map(booking, BookingHotelDto.class))
                 .collect(Collectors.toList());

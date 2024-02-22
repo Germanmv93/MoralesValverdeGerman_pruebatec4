@@ -49,7 +49,7 @@ public class RoomController {
             String message = String.format("Room number %s successfully deleted from hotel %s.", roomNumber, hotelCode);
             return ResponseEntity.ok(message);
         } catch (RuntimeException ex) {
-            // Asumiendo que capturas una RuntimeException o una excepción más específica que creaste.
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
